@@ -117,6 +117,8 @@ See [WEBRTC_IMPLEMENTATION.md](./WEBRTC_IMPLEMENTATION.md) for detailed SSL setu
 |----------|-------------|----------|
 | INFOBIP_API_KEY | Your Infobip API key | Yes |
 | INFOBIP_BASE_URL | Infobip API base URL | Yes |
+| NEXT_PUBLIC_AUTH_USERNAME | Login username | Yes |
+| AUTH_PASSWORD | Login password | Yes |
 
 ## Browser Support
 

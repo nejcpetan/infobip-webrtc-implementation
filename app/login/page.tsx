@@ -9,14 +9,25 @@ export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (auth.login(username, password)) {
-      router.push("/");
-    } else {
-      setError("Invalid credentials");
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const success = await auth.login(username, password);
+      if (success) {
+        router.push("/");
+      } else {
+        setError("Invalid credentials");
+      }
+    } catch (error) {
+      setError("Authentication failed");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -54,8 +65,8 @@ export default function LoginPage() {
             />
           </div>
 
-          <Button type="submit" className="w-full">
-            Login
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Logging in..." : "Login"}
           </Button>
         </form>
       </div>
