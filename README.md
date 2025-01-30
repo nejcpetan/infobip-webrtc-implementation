@@ -34,18 +34,8 @@ npm install
 1. Create `.env` file:
 ```env
 INFOBIP_API_KEY=your_api_key_here
-INFOBIP_BASE_URL=infobip_api_url_here
-```
-
-1. For development with SSL (required for WebRTC):
-```bash
-# Install mkcert
-mkcert -install
-mkcert localhost 127.0.0.1 ::1
-
-# This will generate:
-# - localhost.pem
-# - localhost-key.pem
+NEXT_PUBLIC_AUTH_USERNAME=your_username_here
+AUTH_PASSWORD=your_password_here
 ```
 
 ## Development
@@ -76,7 +66,7 @@ WebRTC requires HTTPS to work. Choose one of these options:
 
 1. **Let's Encrypt** (recommended for production)
 2. **mkcert** (for development)
-3. **Vercel** (automatic SSL handling)
+3. **Vercel** (automatic SSL handling) - fan favorite!
 
 See [WEBRTC_IMPLEMENTATION.md](./WEBRTC_IMPLEMENTATION.md) for detailed SSL setup instructions.
 
@@ -116,7 +106,6 @@ See [WEBRTC_IMPLEMENTATION.md](./WEBRTC_IMPLEMENTATION.md) for detailed SSL setu
 | Variable | Description | Required |
 |----------|-------------|----------|
 | INFOBIP_API_KEY | Your Infobip API key | Yes |
-| INFOBIP_BASE_URL | Infobip API base URL | Yes |
 | NEXT_PUBLIC_AUTH_USERNAME | Login username | Yes |
 | AUTH_PASSWORD | Login password | Yes |
 
@@ -151,10 +140,6 @@ See [WEBRTC_IMPLEMENTATION.md](./WEBRTC_IMPLEMENTATION.md) for detailed SSL setu
 3. Commit your changes
 4. Push to the branch
 5. Create a Pull Request
-
-## License
-
-[Your chosen license]
 
 ## Acknowledgments
 
