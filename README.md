@@ -1,36 +1,161 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Infobip Web Calling Helper
 
-## Getting Started
+A Next.js application that enables browser-based phone calls using Infobip's WebRTC SDK. This project provides a simple, user-friendly interface for making phone calls directly from a web browser.
 
-First, run the development server:
+## Features
+
+- 📞 Make phone calls from browser to phone numbers
+- 🎵 Call status feedback with ring tones
+- 🎚️ Audio controls (mute/unmute)
+- ⏱️ Call duration tracking
+- 📱 Responsive dial pad interface
+- 🔒 Secure WebRTC communication
+
+## Prerequisites
+
+- Node.js 18+ 
+- Infobip account with WebRTC enabled
+- Valid SSL certificate for production use
+- API credentials from Infobip
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/nejcpetan/infobip-webrtc-implementation.git
+cd infobip-web-calling
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+1. Create `.env` file:
+```env
+INFOBIP_API_KEY=your_api_key_here
+INFOBIP_BASE_URL=infobip_api_url_here
+```
+
+1. For development with SSL (required for WebRTC):
+```bash
+# Install mkcert
+mkcert -install
+mkcert localhost 127.0.0.1 ::1
+
+# This will generate:
+# - localhost.pem
+# - localhost-key.pem
+```
+
+## Development
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The application will be available at `https://localhost:3000`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Production Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Build the application:
+```bash
+npm run build
+```
 
-## Learn More
+2. Start the production server:
+```bash
+npm start
+```
 
-To learn more about Next.js, take a look at the following resources:
+### SSL Configuration
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+WebRTC requires HTTPS to work. Choose one of these options:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Let's Encrypt** (recommended for production)
+2. **mkcert** (for development)
+3. **Vercel** (automatic SSL handling)
 
-## Deploy on Vercel
+See [WEBRTC_IMPLEMENTATION.md](./WEBRTC_IMPLEMENTATION.md) for detailed SSL setup instructions.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Usage
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Open the application in a WebRTC-compatible browser
+2. Enter a phone number using the dial pad or keyboard
+3. Click the "Call" button or press Enter to initiate the call
+4. Use the in-call controls to:
+   - Mute/unmute the call
+   - End the call
+   - Monitor call duration
+
+## Project Structure
+
+```
+├── app/
+│   ├── api/
+│   │   ├── call/
+│   │   └── webrtc-token/
+│   ├── layout.tsx
+│   └── page.tsx
+├── components/
+│   ├── DialPad.tsx
+│   ├── CallControls.tsx
+│   └── InfobipScript.tsx
+├── services/
+│   └── webrtc.ts
+├── types/
+│   └── infobip.d.ts
+└── utils/
+    └── audioTest.ts
+```
+
+## Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| INFOBIP_API_KEY | Your Infobip API key | Yes |
+| INFOBIP_BASE_URL | Infobip API base URL | Yes |
+
+## Browser Support
+
+- Chrome 60+
+- Firefox 52+
+- Safari 11+
+- Edge 79+
+
+## Common Issues
+
+1. **Audio not working**
+   - Check browser permissions
+   - Verify microphone access
+   - Ensure SSL is properly configured
+
+2. **Calls not connecting**
+   - Verify API credentials
+   - Check network connectivity
+   - Confirm WebRTC compatibility
+
+3. **SSL Certificate Issues**
+   - Follow SSL setup guide in documentation
+   - Ensure certificates are properly installed
+   - Check certificate expiration
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+[Your chosen license]
+
+## Acknowledgments
+
+- Built with [Next.js](https://nextjs.org/)
+- Powered by [Infobip WebRTC SDK](https://www.infobip.com/docs/webrtc)
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
