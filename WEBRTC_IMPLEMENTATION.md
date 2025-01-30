@@ -877,4 +877,160 @@ For production deployment, remember to:
 - Test across different browsers and devices
 - Install certificates - WebRTC requires certificates for secure connections and won't work without them.
 
-[Rest of the documentation continues...] 
+## SSL Certificate Setup
+
+### Option 1: Using Let's Encrypt (Recommended for Production)
+
+1. Install Certbot:
+```bash
+# On Ubuntu/Debian
+sudo apt-get update
+sudo apt-get install certbot
+
+# On CentOS/RHEL
+sudo dnf install certbot
+```
+
+2. Generate certificate:
+```bash
+sudo certbot certonly --standalone -d yourdomain.com
+```
+
+3. Configure your web server (example for Nginx):
+```nginx
+server {
+    listen 443 ssl;
+    server_name yourdomain.com;
+
+    ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
+
+    # Modern SSL configuration
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;
+
+    # HSTS (uncomment if you're sure)
+    # add_header Strict-Transport-Security "max-age=63072000" always;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+### Option 2: Using mkcert (For Development)
+
+1. Install mkcert:
+```bash
+# On macOS
+brew install mkcert
+brew install nss # for Firefox
+
+# On Windows
+choco install mkcert
+
+# On Linux
+sudo apt install libnss3-tools
+sudo apt install mkcert
+```
+
+2. Create and install local CA:
+```bash
+mkcert -install
+```
+
+3. Generate certificates for your domain:
+```bash
+mkcert localhost 127.0.0.1 ::1
+```
+
+4. Configure Next.js to use SSL:
+
+Create `server.js` in your project root:
+```javascript
+const { createServer } = require('https');
+const { parse } = require('url');
+const next = require('next');
+const fs = require('fs');
+
+const dev = process.env.NODE_ENV !== 'production';
+const app = next({ dev });
+const handle = app.getRequestHandler();
+
+const httpsOptions = {
+  key: fs.readFileSync('./localhost-key.pem'),
+  cert: fs.readFileSync('./localhost.pem'),
+};
+
+app.prepare().then(() => {
+  createServer(httpsOptions, (req, res) => {
+    const parsedUrl = parse(req.url, true);
+    handle(req, res, parsedUrl);
+  }).listen(3000, (err) => {
+    if (err) throw err;
+    console.log('> Ready on https://localhost:3000');
+  });
+});
+```
+
+5. Update package.json:
+```json
+{
+  "scripts": {
+    "dev": "node server.js",
+    "build": "next build",
+    "start": "NODE_ENV=production node server.js"
+  }
+}
+```
+
+### Option 3: Using Vercel (Easiest for Production)
+
+If deploying to Vercel, SSL is automatically handled:
+
+1. Install Vercel CLI:
+```bash
+npm i -g vercel
+```
+
+2. Deploy your app:
+```bash
+vercel
+```
+
+### Important Security Considerations
+
+1. **Certificate Renewal**:
+   - Let's Encrypt certificates expire after 90 days
+   - Set up auto-renewal:
+   ```bash
+   sudo certbot renew --dry-run
+   ```
+   - Add to crontab:
+   ```bash
+   0 12 * * * /usr/bin/certbot renew --quiet
+   ```
+
+2. **Browser Security**:
+   - Ensure your domain is properly configured
+   - Set up proper CORS headers
+   - Enable HSTS if possible
+
+3. **WebRTC-Specific**:
+   - Configure ICE servers properly
+   - Use TURN servers for fallback
+   - Enable secure WebSocket connections
+
+4. **Environment Variables**:
+   - Update your .env.local for HTTPS:
+   ```env
+   NEXT_PUBLIC_BASE_URL=https://yourdomain.com
+   ```
+
+Remember: WebRTC requires HTTPS in production. The only exception is localhost during development.
